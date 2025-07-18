@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chat</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="symphbot.css">
+  <style>
+    
+:root {
+  --bg: #f0f6ff;
+  --panel-bg: #ffffff;
+  --text: #003366;
+  --accent: #007bff;
+  --shadow: rgba(0, 0, 0, 0.1);
+}
+[data-theme="dark"] {
+  --bg: #0d0f19;
+  --panel-bg: rgba(20, 22, 35, 0.8);
+  --text: #e0e6ff;
+  --accent: #66b2ff;
+  --shadow: rgba(0, 0, 0, 0.6);
+}
+[data-theme="dark"] h3,
+[data-theme="dark"] h5,
+[data-theme="dark"] h6 {
+  color: #66b2ff !important;
+  font-weight: 600;
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+}
+
+/* Top Navigation Bar */
+.topnav {
+  position: sticky; top: 0; z-index: 1000;
+  background: var(--panel-bg); backdrop-filter: blur(8px);
+  padding: .75rem 1rem; display: flex;
+  justify-content: space-between; align-items: center;
+  box-shadow: 0 2px 4px var(--shadow);
+}
+.brand { font-size: 1.25rem; font-weight: 600; color: var(--accent); }
+.menu-icon, .theme-icon {
+  font-size: 1.4rem; cursor: pointer;
+  color: var(--text); margin-left: 1rem;
+  transition: color .2s;
+}
+.menu-icon:hover, .theme-icon:hover { color: var(--accent); }
+.offcanvas {
+  background: var(--panel-bg) !important;
+  backdrop-filter: blur(6px);
+}
+.offcanvas .nav-link {
+  color: var(--text) !important;
+  transition: background .2s, color .2s;
+}
+.offcanvas .nav-link:hover {
+  background: rgba(102,178,255,0.1) !important;
+  color: var(--accent) !important;
+}
+.offcanvas .nav-link.active {
+  background: rgba(102,178,255,0.2) !important;
+  color: var(--accent) !important;
+}
+
+/* Main container */
+.main {
+  padding-bottom: 2rem;
+}
+
+/* Tab Panels */
+.tab-content-panel {
+  background: var(--panel-bg);
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px var(--shadow);
+}
+
+/* Sidebar (Offcanvas) */
+[data-theme="dark"] .offcanvas-body {
+  background-color: var(--panel-bg);
+  color: var(--text);
+}
+
+/* Contacts Pane */
+.contacts-pane {
+  background: var(--panel-bg);
+}
+.contacts-pane .list-group-item {
+  background: var(--panel-bg);
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.contacts-pane .list-group-item:hover,
+.contacts-pane .list-group-item.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* Chat Pane */
+.chat-pane {
+  background: var(--panel-bg);
+}
+.chat-header {
+  justify-content: space-between;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+#messagesPane {
+  background: var(--bg);
+  border-radius: 8px;
+  padding: 0.5rem;
+}
+
+#msgInput,
+#sendBtn {
+  border-radius: 2rem;
+}
+#sendBtn {
+  padding: 0 1.5rem;
+}
+
+.chat-pane .badge {
+  padding: 0.5em 0.75em;
+  border-radius: 1em;
+  max-width: 80%;
+  display: inline-block;
+  word-wrap: break-word;
+}
+
+.chat-pane .small {
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.chat-pane .text-muted {
+  color: #ccc !important;  /* try a lighter shade for better contrast */
+  font-weight: 500;
+}
+  #attachmentPreview {
+      max-width: 100px;
+      max-height: 100px;
+      margin-top: 5px;
+      display: none;
+    }
+    /* Enable vertical scrolling in the messages pane */
+    #messagesPane {
+      overflow-y: auto;
+      overflow-x: hidden;
+      height: 65vh;
+    }
+    .quick-messages button {
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Top nav -->
+  <nav class="topnav d-flex justify-content-between align-items-center px-3 py-2 border-bottom">
+    <div class="brand fw-bold">Symphion</div>
+    <div>
+      <i id="themeToggle" class="bi bi-palette-fill theme-icon"></i>
+      <i class="bi bi-three-dots-vertical menu-icon" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu"></i>
+    </div>
+  </nav>
+
+  <!-- Off-canvas Sidebar -->
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasMenu">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title">My Account</h5>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body">
+      <nav class="nav flex-column" id="sidebarNav">
+        <a class="nav-link" href="dashboard.html"><i class="bi bi-house-door-fill me-2"></i>Dashboard</a>
+        <a class="nav-link" href="myprofile.html"><i class="bi bi-person-circle me-2"></i>My Profile</a>
+        <a class="nav-link" href="chat.html"><i class="bi bi-chat-dots-fill me-2"></i>Chat</a>
+        <a class="nav-link" href="guardians.html"><i class="bi bi-people-fill me-2"></i>Trusted Circle</a>
+        <a class="nav-link" href="emergencies.html"><i class="bi bi-exclamation-triangle-fill me-2"></i>Emergencies</a>
+        <a class="nav-link" href="recordings.html"><i class="bi bi-mic-fill me-2"></i>Audio Vault</a>
+        <a class="nav-link text-danger" href="login.html"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main container-fluid mt-4">
+    <div class="row gx-0">
+      <!-- Contacts Pane -->
+      <div class="col-md-4 contacts-pane p-3">
+        <h5 class="mb-3">Trusted Circle Chat</h5>
+        <ul id="contactsList" class="list-group"></ul>
+      </div>
+      <!-- Chat Pane -->
+      <div class="col-md-8 chat-pane d-none d-md-flex flex-column p-3">
+        <div class="chat-header d-flex align-items-center border-bottom pb-2 mb-2">
+          <button id="backBtn" class="btn btn-link d-md-none me-2"><i class="bi bi-arrow-left"></i></button>
+          <button id="backBtnMd" class="btn btn-link d-none d-md-inline me-2" title="Back">
+            <i class="bi bi-arrow-left"></i>
+          </button>
+          <div id="chatHeader">Select a contact</div>
+          <div id="statusIndicator" class="ms-auto small text-muted">Offline</div>
+        </div>
+        <div id="messagesPane" class="flex-grow-1 mb-2"></div>
+        <!-- Quick predefined messages -->
+        <div class="quick-messages mb-2">
+          <button class="btn btn-sm btn-outline-secondary" data-quick="I'm safe">I'm safe now</button>
+          <button class="btn btn-sm btn-outline-secondary" data-quick="Need assistance">Feeling a little bit uneasy</button>
+          <button class="btn btn-sm btn-outline-secondary" data-quick="Please call me">Someone is following me</button>
+          <button class="btn btn-sm btn-outline-secondary" data-quick="Emergency soon">Emergency soon</button>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <label for="fileInput" class="btn btn-outline-secondary mb-0">
+            <i class="bi bi-paperclip"></i>
+          </label>
+          <input type="file" accept="image/*" id="fileInput" hidden>
+          <button id="cameraBtn" class="btn btn-outline-secondary" title="Take Photo">
+            <i class="bi bi-camera"></i>
+          </button>
+          <input id="msgInput" type="text" class="form-control me-2" placeholder="Type a message…" disabled>
+          <button id="sendBtn" class="btn btn-primary" disabled>Send</button>
+        </div>
+        <img id="attachmentPreview">
+      </div>
+    </div>
+  </div>
+
+<!-- Symphbot Toggle Button -->
+<div id="symphbotBtn">
+  <img src="Bot.png" alt="Chat with Symphbot" />
+</div>
+
+<!-- Symphbot Chat Modal -->
+<div class="modal fade symphbot-modal" id="symphbotModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content d-flex flex-column">
+      <div class="modal-header">
+        <h5 class="modal-title">Symphbot</h5>
+        <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body d-flex flex-column" id="symphbotBody">
+        <!-- Bot and user messages appear here -->
+      </div>
+      <div class="modal-footer">
+        <div class="input-group">
+          <input type="text" id="symphbotInput" class="form-control" placeholder="Ask me anything…">
+          <button class="btn btn-secondary" id="symphbotSend"><i class="bi bi-send-fill"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const themeToggle = document.getElementById('themeToggle');
+    themeToggle.addEventListener('click', () => {
+      const root = document.documentElement;
+      const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+      root.setAttribute('data-theme', next);
+      themeToggle.classList.toggle('bi-palette-fill');
+      themeToggle.classList.toggle('bi-palette');
+    });
+
+    const contactsPane = document.querySelector('.contacts-pane');
+    const chatPane = document.querySelector('.chat-pane');
+    const backBtn = document.getElementById('backBtn');
+    const backBtnMd = document.getElementById('backBtnMd');
+    const fileInput = document.getElementById('fileInput');
+    const attachmentPreview = document.getElementById('attachmentPreview');
+    const cameraBtn = document.getElementById('cameraBtn');
+    const quickBtns = document.querySelectorAll('.quick-messages button');
+
+    function showChatPane() {
+      contactsPane.classList.add('d-none');
+      chatPane.classList.remove('d-none');
+    }
+    function showContactsPane() {
+      contactsPane.classList.remove('d-none');
+      if (window.innerWidth < 768) chatPane.classList.add('d-none');
+    }
+
+    backBtn.addEventListener('click', showContactsPane);
+    backBtnMd.addEventListener('click', showContactsPane);
+
+    let currentContact = null;
+    const contacts = JSON.parse(localStorage.getItem('guardians') || '[]');
+    const contactsUl = document.getElementById('contactsList');
+    const statusIndicator = document.getElementById('statusIndicator');
+
+    contacts.forEach(c => {
+      const li = document.createElement('li');
+      li.className = 'list-group-item list-group-item-action';
+      li.textContent = c.name;
+      li.dataset.name = c.name;
+      li.addEventListener('click', () => selectContact(c));
+      contactsUl.appendChild(li);
+    });
+
+    function selectContact(c) {
+      currentContact = c;
+      document.getElementById('chatHeader').textContent = c.name;
+      statusIndicator.textContent = 'Online';
+      document.getElementById('msgInput').disabled = false;
+      document.getElementById('sendBtn').disabled = false;
+      loadConversation(c.name);
+      showChatPane();
+    }
+
+    quickBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const text = btn.dataset.quick;
+        sendMessage({ text });
+      });
+    });
+
+    function loadConversation(name) {
+      const key = `chat_${name}`;
+      const msgs = JSON.parse(localStorage.getItem(key) || '[]');
+      const pane = document.getElementById('messagesPane');
+      pane.innerHTML = '';
+      msgs.forEach(m => {
+        const div = document.createElement('div');
+        div.className = m.from === 'me' ? 'text-end mb-2' : 'text-start mb-2';
+        let content = '';
+        if (m.imageData) {
+          content = `<img src="${m.imageData}" class="img-thumbnail" style="max-width:200px;">`;
+        } else {
+          content = `<span class="badge ${m.from === 'me' ? 'bg-primary' : 'bg-secondary'}">${m.text}</span>`;
+        }
+        const time = m.time ? new Date(m.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+        let receipt = '';
+        if (m.from === 'me') {
+          receipt = m.read ? ' <i class="bi bi-check-all text-info"></i>' : ' <i class="bi bi-check"></i>';
+        }
+        div.innerHTML = `${content}<div class="small text-muted">${time}${receipt}</div>`;
+        pane.appendChild(div);
+      });
+      pane.scrollTop = pane.scrollHeight;
+      msgs.forEach(m => { if (m.from !== 'me') m.read = true; });
+      localStorage.setItem(`chat_${name}`, JSON.stringify(msgs));
+    }
+
+    function sendMessage({ text, imageData }) {
+      const key = `chat_${currentContact.name}`;
+      const msgs = JSON.parse(localStorage.getItem(key) || '[]');
+      const message = { from: 'me', time: Date.now(), read: false };
+      if (imageData) message.imageData = imageData;
+      else message.text = text;
+      msgs.push(message);
+      localStorage.setItem(key, JSON.stringify(msgs));
+      document.getElementById('msgInput').value = '';
+      document.getElementById('attachmentPreview').style.display = 'none';
+      document.getElementById('attachmentPreview').src = '';
+      loadConversation(currentContact.name);
+    }
+
+    document.getElementById('sendBtn').addEventListener('click', () => {
+      const inp = document.getElementById('msgInput');
+      const text = inp.value.trim();
+      if (!text) return;
+      sendMessage({ text });
+    });
+
+    fileInput.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = evt => {
+        document.getElementById('attachmentPreview').src = evt.target.result;
+        document.getElementById('attachmentPreview').style.display = 'block';
+        sendMessage({ imageData: evt.target.result });
+      };
+      reader.readAsDataURL(file);
+    });
+
+    cameraBtn.addEventListener('click', () => {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        const videoInput = document.createElement('input');
+        videoInput.type = 'file';
+        videoInput.accept = 'image/*';
+        videoInput.capture = 'environment';
+        videoInput.onchange = fileInput.onchange;
+        videoInput.click();
+      } else {
+        alert('Camera access not supported on this device');
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      if (window.innerWidth < 768) showContactsPane();
+    });
+  </script>
+  <script src="symphbot.js"></script>
+</body>
+</html>

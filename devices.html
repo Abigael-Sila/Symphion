@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Devices</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="symphbot.css">
+  <style>
+    :root {
+      --bg: #f8f9fa;
+      --panel-bg: #ffffff;
+      --text: #003366;
+      --accent: #007bff;
+      --shadow: rgba(0, 0, 0, 0.1);
+      --table-bg: #ffffff;
+      --input-bg: #ffffff;
+    }
+    [data-theme="dark"] {
+      --bg: #121212;
+      --panel-bg: rgba(30,30,47,0.6);
+      --text: #e0e6ff;
+      --accent: #66b2ff;
+      --shadow: rgba(0,0,0,0.7);
+      --table-bg: rgba(20,20,35,0.8);
+      --input-bg: #2b2b3d;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      transition: background .3s, color .3s;
+    }
+    /* Headings style in dark mode */
+    [data-theme="dark"] h2,
+    [data-theme="dark"] h5 {
+      color: #66b2ff !important;
+      font-weight: 600;
+    }
+    [data-theme="dark"] .brand {
+      color: var(--accent) !important;
+    }
+    .topnav {
+      position: sticky; top: 0; background: var(--panel-bg);
+      display: flex; justify-content: space-between; align-items: center;
+      padding: .75rem 1rem; box-shadow: 0 2px 4px var(--shadow);
+    }
+
+    .brand {
+      font-size: 1.25rem; font-weight: 600; color: var(--accent);
+    }
+
+    .theme-icon, .menu-icon {
+      cursor: pointer; margin-left: 1rem; color: var(--text);
+    }
+
+    .main {
+      padding: 2rem;
+    }
+
+    .card, .modal-content {
+      background: var(--panel-bg); color: var(--text);
+    }
+
+    .table {
+      background-color: var(--table-bg) !important;
+      color: var(--text);
+    }
+
+    .table td, .table th {
+      background-color: var(--table-bg) !important;
+      color: var(--text) !important;
+    }
+
+    .form-control, .form-select {
+      background-color: var(--input-bg);
+      color: var(--text);
+      border: 1px solid var(--shadow);
+    }
+
+    .form-control::placeholder {
+      color: #ccc;
+    }
+
+    /* Offcanvas Styling */
+    .offcanvas {
+      background: var(--panel-bg) !important;
+      backdrop-filter: blur(8px);
+      color: var(--text);
+    }
+
+    .offcanvas .nav-link {
+      color: var(--text);
+      transition: all 0.2s;
+    }
+
+    .offcanvas .nav-link:hover {
+      background: rgba(102, 178, 255, 0.1);
+      color: var(--accent);
+    }
+
+    .offcanvas .nav-link.active {
+      background: rgba(102, 178, 255, 0.2);
+      color: var(--accent);
+    }
+
+    [data-theme="dark"] .btn-close {
+      filter: invert(1) brightness(2) contrast(2);
+    }
+    /* Smooth icon shift and background glow on hover */
+    #sidebarNav .nav-link {
+      position: relative;
+      transition: background 0.3s ease, transform 0.3s ease;
+      border-radius: 8px;
+    }
+
+    #sidebarNav .nav-link:hover {
+      background: rgba(102, 178, 255, 0.15);
+      transform: translateX(5px);
+      color: var(--accent) !important;
+    }
+
+    /* Animate icon movement */
+    #sidebarNav .nav-link i {
+      transition: transform 0.3s ease;
+    }
+
+    #sidebarNav .nav-link:hover i {
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body>
+  <nav class="topnav">
+    <div class="brand">Symphion</div>
+    <div>
+      <i id="themeToggle" class="bi bi-palette-fill theme-icon"></i>
+      <i class="bi bi-three-dots-vertical menu-icon" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu"></i>
+    </div>
+  </nav>
+
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasMenu">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title">Menu</h5>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body">
+      <nav class="nav flex-column" id="sidebarNav">
+<a class="nav-link" href="dashboard.html"><i class="bi bi-house-door-fill me-2"></i>Dashboard</a>
+        <a class="nav-link" href="myprofile.html"><i class="bi bi-person-circle me-2"></i>My Profile</a>
+        <a class="nav-link" href="chat.html"><i class="bi bi-chat-dots-fill me-2"></i>Chat</a>
+        <a class="nav-link" href="guardians.html"><i class="bi bi-people-fill me-2"></i>Trusted Circle</a>
+        <a class="nav-link" href="emergencies.html"><i class="bi bi-exclamation-triangle-fill me-2"></i>Emergencies</a>
+        <a class="nav-link" href="recordings.html"><i class="bi bi-mic-fill me-2"></i>Audio Vault</a>
+        <a class="nav-link text-danger" href="login.html"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
+      </nav>
+    </div>
+  </div>
+
+  <div class="main container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2>Devices</h2>
+      <button id="addBtn" class="btn btn-primary">+ Add Device</button>
+    </div>
+
+    <div class="card p-3 mb-4">
+      <h5>Device List</h5>
+      <table class="table mt-3" id="deviceTable">
+        <thead>
+          <tr><th>Token Name</th><th>OS Version</th><th>Status</th><th>Actions</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Add/Edit Modal -->
+  <div class="modal fade" id="deviceModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalTitle">Add Device</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="deviceForm">
+            <div class="mb-3">
+              <label class="form-label">Token Name</label>
+              <input type="text" class="form-control" id="tokenName" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">OS Version</label>
+              <input type="text" class="form-control" id="osVersion" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Symphbot Toggle Button -->
+<div id="symphbotBtn">
+  <img src="Bot.png" alt="Chat with Symphbot" />
+</div>
+
+<!-- Symphbot Chat Modal -->
+<div class="modal fade symphbot-modal" id="symphbotModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content d-flex flex-column">
+      <div class="modal-header">
+        <h5 class="modal-title">Symphbot</h5>
+        <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body d-flex flex-column" id="symphbotBody">
+        <!-- Bot and user messages appear here -->
+      </div>
+      <div class="modal-footer">
+        <div class="input-group">
+          <input type="text" id="symphbotInput" class="form-control" placeholder="Ask me anything…">
+          <button class="btn btn-secondary" id="symphbotSend"><i class="bi bi-send-fill"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    let devices = [];
+    let editIndex = null;
+    const tableBody = document.querySelector('#deviceTable tbody');
+    const modal = new bootstrap.Modal(document.getElementById('deviceModal'));
+
+    document.getElementById('addBtn').addEventListener('click', () => {
+      editIndex = null;
+      document.getElementById('modalTitle').textContent = 'Add Device';
+      document.getElementById('deviceForm').reset();
+      modal.show();
+    });
+
+    document.getElementById('deviceForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const name = document.getElementById('tokenName').value;
+      const os = document.getElementById('osVersion').value;
+      const status = 'Connected';
+
+      if (editIndex === null) {
+        devices.push({ name, os, status });
+      } else {
+        devices[editIndex] = { name, os, status };
+      }
+      renderTable();
+      modal.hide();
+    });
+
+    function renderTable() {
+      tableBody.innerHTML = '';
+      devices.forEach((d, i) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${d.name}</td>
+          <td>${d.os}</td>
+          <td>${d.status}</td>
+          <td>
+            <button class="btn btn-sm btn-link" onclick="editDevice(${i})">Edit</button>
+            <button class="btn btn-sm btn-link text-danger" onclick="deleteDevice(${i})">Delete</button>
+          </td>`;
+        tableBody.appendChild(row);
+      });
+    }
+
+    window.editDevice = function(i) {
+      editIndex = i;
+      document.getElementById('modalTitle').textContent = 'Edit Device';
+      document.getElementById('tokenName').value = devices[i].name;
+      document.getElementById('osVersion').value = devices[i].os;
+      modal.show();
+    }
+
+    window.deleteDevice = function(i) {
+      devices.splice(i, 1);
+      renderTable();
+    }
+
+    // Theme toggle
+    document.getElementById('themeToggle').onclick = () => {
+      const root = document.documentElement;
+      root.setAttribute('data-theme', root.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+    };
+  </script>
+  <script src="symphbot.js"></script>
+</body>
+</html>

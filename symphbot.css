@@ -1,0 +1,107 @@
+/* symphbot.css */
+:root {
+  --accent: #007bff;
+  --panel-bg: #ffffff;
+  --text: #003366;
+  --shadow: rgba(0, 0, 0, 0.1);
+}
+[data-theme="dark"] {
+  --panel-bg: rgba(20, 22, 35, 0.8);
+  --text: #e0e6ff;
+}
+
+/* Floating Chat Button */
+#symphbotBtn {
+  /* keep your existing styles… */
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px var(--shadow);
+  cursor: pointer;
+  z-index: 1050;
+  overflow: hidden;          /* ✦ ensure anything outside the circle is clipped */
+}
+
+#symphbotBtn img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;         /* ✦ scale & crop to fill the button */
+  object-position: center;   /* ✦ center the image in its container */
+  display: block;
+  /* no border-radius needed here since parent is already circular & overflow:hidden */
+}
+
+
+/* Chat Modal Styling */
+.symphbot-modal .modal-content {
+  background: var(--panel-bg);
+  color: var(--text);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px var(--shadow);
+}
+.symphbot-modal .modal-header {
+  border-bottom: none;
+  background: var(--accent);
+  color: #fff;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+.symphbot-modal .modal-body {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 1rem;
+}
+.symphbot-modal .message {
+  margin-bottom: .75rem;
+  display: flex;
+}
+.symphbot-modal .message.user .bubble {
+  background: var(--accent);
+  color: #fff;
+  align-self: flex-end;
+}
+.symphbot-modal .message.bot .bubble {
+  background: var(--panel-bg);
+  border: 1px solid var(--shadow);
+  color: var(--text);
+  align-self: flex-start;
+}
+.symphbot-modal .bubble {
+  padding: .5rem 1rem;
+  border-radius: 1rem;
+  display: inline-block;
+  max-width: 80%;
+  word-wrap: break-word;
+}
+.symphbot-modal .modal-footer {
+  border-top: none;
+  padding: .5rem;
+}
+.symphbot-modal .form-control {
+  border-radius: 20px;
+}
+/* Reposition the Symphbot modal to bottom-right instead of centered */
+#symphbotModal .modal-dialog {
+  position: fixed;
+  bottom: 80px; /* above the toggle button */
+  right: 1rem;
+  margin: 0;
+  width: 100%;
+  max-width: 360px;
+  z-index: 1060;
+}
+
+@media (max-width: 576px) {
+  #symphbotModal .modal-dialog {
+    width: 95%;
+    right: 2.5%;
+    left: auto;
+  }
+}

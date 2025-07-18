@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Profile</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="symphbot.css">
+  <style>
+    :root {
+  --bg: #f8f9fa;
+  --panel-bg: #ffffff;
+  --text: #003366;
+  --accent: #007bff;
+  --shadow: rgba(0, 0, 0, 0.1);
+}
+[data-theme="dark"] {
+  --bg: #121212;
+  --panel-bg: rgba(30,30,47,0.6);
+  --text: #e0e6ff;
+  --accent: #66b2ff;
+  --shadow: rgba(0,0,0,0.7);
+}
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  transition: background .3s, color .3s;
+}
+[data-theme="dark"] h3,
+[data-theme="dark"] h5,
+[data-theme="dark"] h6 {
+  color: #66b2ff !important;
+  font-weight: 600;
+}
+[data-theme="dark"] .brand {
+  color: var(--accent) !important;
+}
+.topnav {
+  position: sticky; top: 0; z-index: 1000;
+  background: var(--panel-bg); backdrop-filter: blur(8px);
+  padding: .75rem 1rem; display: flex;
+  justify-content: space-between; align-items: center;
+  box-shadow: 0 2px 4px var(--shadow);
+}
+.brand { font-size: 1.25rem; font-weight: 600; color: var(--accent); }
+.menu-icon, .theme-icon {
+  font-size: 1.4rem; cursor: pointer;
+  color: var(--text); margin-left: 1rem;
+  transition: color .2s;
+}
+.menu-icon:hover, .theme-icon:hover { color: var(--accent); }
+.offcanvas {
+  background: var(--panel-bg) !important;
+  backdrop-filter: blur(6px);
+}
+.offcanvas .nav-link {
+  color: var(--text) !important;
+  transition: background .2s, color .2s;
+}
+.offcanvas .nav-link:hover {
+  background: rgba(102,178,255,0.1) !important;
+  color: var(--accent) !important;
+}
+.offcanvas .nav-link.active {
+  background: rgba(102,178,255,0.2) !important;
+  color: var(--accent) !important;
+}
+[data-theme="dark"] .btn-close {
+  filter: invert(1) brightness(2) contrast(2);
+}
+.main { padding: 2rem; }
+@media (max-width:768px) { .main { padding: 1rem; } }
+.section { margin-bottom: 1.5rem; }
+.row.match-cards > [class*=col-] {
+  display: flex; flex-direction: column; gap: 1rem;
+}
+.card {
+  flex: 1; border-radius: 12px;
+  background: var(--panel-bg);
+  box-shadow: 0 4px 12px var(--shadow);
+  transition: transform .2s, box-shadow .2s;
+}
+
+/* Animate emergency contact entries */
+#emergencyList li {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: slideIn 0.4s ease forwards;
+}
+#emergencyList li:nth-child(1) { animation-delay: 0.1s; }
+#emergencyList li:nth-child(2) { animation-delay: 0.2s; }
+#emergencyList li:nth-child(3) { animation-delay: 0.3s; }
+#emergencyList li:nth-child(4) { animation-delay: 0.4s; } /* for +N more */
+
+@keyframes slideIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Optional: style for the "+N more..." link */
+#emergencyList a.more-link {
+  font-style: italic;
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  color: var(--accent);
+}
+#emergencyList a.more-link:hover {
+  text-decoration: underline;
+}
+
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px var(--shadow);
+}
+.card, .card * {
+  color: var(--text) !important;
+}
+
+#emergencyList li i {
+  margin-right: 0.1rem !important; /* reduce space between icon and text */
+}
+
+
+.photo-upload { position: relative; width:120px; height:120px; margin:0 auto 1rem; }
+.avatar-wrapper {
+  width:100%; height:100%;
+  border:2px solid var(--accent);
+  border-radius:50%; overflow:hidden; cursor:pointer;
+  transition: border-color .2s;
+}
+.avatar-img { width:100%; height:100%; object-fit:cover; }
+.avatar-plus {
+  position:absolute; bottom:0; right:0;
+  background:var(--accent); color:#fff;
+  width:32px; height:32px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px; border:2px solid #fff;
+}
+.card-header {
+  background: var(--panel-bg) !important;
+  border-bottom: 1px solid var(--shadow);
+  color: var(--text) !important;
+}
+@media (max-width:992px) {
+  .col-lg-6 { flex: 0 0 100%; max-width: 100%; }
+}
+#sidebarNav .nav-link {
+  position: relative;
+  transition: background 0.3s ease, transform 0.3s ease;
+  border-radius: 8px;
+}
+#sidebarNav .nav-link:hover {
+  background: rgba(102, 178, 255, 0.15);
+  transform: translateX(5px);
+  color: var(--accent) !important;
+}
+#sidebarNav .nav-link i {
+  transition: transform 0.3s ease;
+}
+#sidebarNav .nav-link:hover i {
+  transform: scale(1.1);
+}
+/* Emergency contacts list match recordings styling */
+#emergencyList li {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+#emergencyList li:last-child {
+  border-bottom: none;
+}
+#emergencyList a {
+  font-weight: 500;
+  color: var(--accent) !important;
+  text-decoration: none;
+}
+#emergencyList a:hover {
+  text-decoration: underline;
+}
+    .profile-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 768px) {
+      .profile-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .profile-section {
+      background: var(--panel-bg);
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px var(--shadow);
+      margin-bottom: 1rem;
+    }
+    .form-control, .form-select, textarea {
+      background-color: var(--bg) !important;
+      color: black !important;
+    }
+    [data-theme="dark"] .form-control,
+    [data-theme="dark"] .form-select,
+    [data-theme="dark"] textarea {
+      background-color: #1e1e2f !important;
+      color: white !important;
+    }
+    .emg-contact {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: .5rem;
+    }
+    .emg-contact div {
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+  <nav class="topnav">
+    <div class="brand">Symphion</div>
+    <div>
+      <i id="themeToggle" class="bi bi-palette-fill theme-icon"></i>
+      <i class="bi bi-three-dots-vertical menu-icon" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu"></i>
+    </div>
+  </nav>
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasMenu">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title">Menu</h5>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body">
+      <nav class="nav flex-column" id="sidebarNav">
+        <a class="nav-link" href="dashboard.html"><i class="bi bi-house-door-fill me-2"></i>Dashboard</a>
+        <a class="nav-link" href="myprofile.html"><i class="bi bi-person-circle me-2"></i>My Profile</a>
+        <a class="nav-link" href="chat.html"><i class="bi bi-chat-dots-fill me-2"></i>Chat</a>
+        <a class="nav-link" href="guardians.html"><i class="bi bi-people-fill me-2"></i>Trusted Circle</a>
+        <a class="nav-link" href="emergencies.html"><i class="bi bi-exclamation-triangle-fill me-2"></i>Emergencies</a>
+        <a class="nav-link" href="recordings.html"><i class="bi bi-mic-fill me-2"></i>Audio Vault</a>
+        <a class="nav-link text-danger" href="login.html"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
+      </nav>
+    </div>
+  </div>
+  <div class="main container-fluid">
+    <h3 class="mb-4 text-center">My Profile</h3>
+    <form id="profileForm" class="profile-grid">
+      <div class="profile-section">
+        <div class="text-center mb-3">
+          <img id="avatarPreview" src="" class="rounded-circle" width="100" height="100" alt="Avatar">
+          <div class="mt-2">
+            <input type="file" id="photoInput" hidden>
+            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="photoInput.click()">Change Photo</button>
+          </div>
+        </div>
+        <div class="mb-2"><label class="form-label">Username</label>
+          <input type="text" id="username" class="form-control" readonly>
+        </div>
+        <div class="mb-2"><label class="form-label">Full Name</label>
+          <input type="text" id="name" class="form-control" required>
+        </div>
+        <div class="mb-2"><label class="form-label">Email</label>
+          <input type="email" id="email" class="form-control" required>
+        </div>
+        <div class="mb-2"><label class="form-label">Contact</label>
+          <input type="tel" id="contact" class="form-control" required>
+        </div>
+        <div class="mb-2"><label class="form-label">Date of Birth</label>
+          <input type="date" id="dob" class="form-control">
+        </div>
+        <div class="mb-2"><label class="form-label">Gender</label>
+          <select id="gender" class="form-select">
+            <option value="">Select</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <br>
+        <div class="mb-3">
+          <label class="form-label"><h5>Trusted Circle</h5></label>
+          <div id="contactsList" class="mb-2"></div>
+        </div>
+      </div>
+      <div class="profile-section">
+        <div class="row mb-3">
+          <div class="col"><label class="form-label">Height (ft)</label>
+            <input type="number" id="height_ft" class="form-control"></div>
+          <div class="col"><label class="form-label">Height (in)</label>
+            <input type="number" id="height_in" class="form-control"></div>
+          <div class="col"><label class="form-label">Weight (kg)</label>
+            <input type="number" id="weight_kg" class="form-control"></div>
+        </div>
+        <div class="row mb-3">
+          <div class="col"><label class="form-label">County</label>
+            <select id="county" class="form-select" onchange="loadConstituencies()"><option value="">Select County</option></select>
+          </div>
+          <div class="col"><label class="form-label">Constituency</label>
+            <select id="constituency" class="form-select"><option value="">Select Constituency</option></select>
+          </div>
+        </div>
+        <div class="mb-3"><label class="form-label">Describe Yourself</label>
+          <textarea id="description" class="form-control" rows="2"></textarea>
+        </div>
+        <div class="mb-3"><label class="form-label">Primary Use Cases</label><br>
+          <label><input type="checkbox" name="use_case" value="medical"> Medical Emergency</label><br>
+          <label><input type="checkbox" name="use_case" value="safety"> Personal Safety</label><br>
+          <label><input type="checkbox" name="use_case" value="security"> Security</label><br>
+          <label><input type="checkbox" name="use_case" value="other"> Other</label><br>
+          <label><input type="checkbox" name="use_case" value="prefer_not"> Prefer Not to Say</label>
+        </div>
+        <div class="mb-3"><label class="form-label">Medical Information</label><br>
+          <div class="mb-2"><label class="form-label">Allergies</label>
+            <input type="text" id="allergies" class="form-control"></div>
+          <div class="mb-2"><label class="form-label">Medications</label>
+            <input type="text" id="medications" class="form-control"></div>
+          <div class="mb-2"><label class="form-label">Disabilities</label>
+            <input type="text" id="disabilities" class="form-control"></div>
+          <div class="mb-2"><label class="form-label">Mental Health</label>
+            <input type="text" id="mental_health" class="form-control"></div>
+          <div class="mb-3"><label class="form-label">Medical Notes</label>
+            <textarea id="medical_notes" class="form-control" rows="2"></textarea>
+          </div>
+        </div>
+        <div class="d-grid">
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+<!-- Symphbot Toggle Button -->
+<div id="symphbotBtn">
+  <img src="Bot.png" alt="Chat with Symphbot" />
+</div>
+
+<!-- Symphbot Chat Modal -->
+<div class="modal fade symphbot-modal" id="symphbotModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content d-flex flex-column">
+      <div class="modal-header">
+        <h5 class="modal-title">Symphbot</h5>
+        <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body d-flex flex-column" id="symphbotBody">
+        <!-- Bot and user messages appear here -->
+      </div>
+      <div class="modal-footer">
+        <div class="input-group">
+          <input type="text" id="symphbotInput" class="form-control" placeholder="Ask me anything…">
+          <button class="btn btn-secondary" id="symphbotSend"><i class="bi bi-send-fill"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // theme toggle + persistence
+    const themeToggle = document.getElementById('themeToggle');
+    themeToggle.addEventListener('click', ()=>{
+      const root = document.documentElement;
+      const next = root.getAttribute('data-theme')==='light'?'dark':'light';
+      root.setAttribute('data-theme',next);
+      localStorage.setItem('preferredTheme',next);
+      themeToggle.classList.toggle('bi-palette-fill');
+      themeToggle.classList.toggle('bi-palette');
+    });
+    document.addEventListener('DOMContentLoaded',()=>{
+      // reapply theme
+      const saved = localStorage.getItem('preferredTheme');
+      if(saved) document.documentElement.setAttribute('data-theme',saved);
+      if(saved==='dark') themeToggle.classList.replace('bi-palette-fill','bi-palette');
+
+      // populate county dropdown
+const counties = {
+  "Mombasa": ["Mvita","Jomvu","Changamwe","Nyali","Kisauni","Likoni"],
+  "Kwale": ["Msambweni","Matuga","Lunga Lunga","Kinango"],
+  "Kilifi": ["Kilifi North","Kilifi South","Rabai","Malindi","Mariakani","Ganze","Kaloleni","Magarini"],
+  "Tana River": ["Galole","Garsen","Bura"],
+  "Lamu": ["Lamu East","Lamu West"],
+  "Taita-Taveta": ["Taveta","Voi","Wundanyi","Mwatate"],
+  "Garissa": ["Garissa Township","Lagdera","Fafi","Ijara","Dadaab","Balambala"],
+  "Wajir": ["Wajir East","Wajir North","Wajir West","Wajir South","Eldas","Tarbaj","Lagdera"],
+  "Mandera": ["Mandera East","Mandera North","Mandera South","Mandera West","Lafey","Banissa","Takaba"],
+  "Marsabit": ["North Horr","Laisamis","Saku","Turkana North"],
+  "Isiolo": ["Isiolo North","Isiolo South","Merti"],
+  "Meru": ["Imenti North","Imenti South","Buuri","Tigania West","Tigania East","North Imenti","South Imenti","Igembe North","Igembe Central","Igembe South"],
+  "Tharaka-Nithi": ["Chuka/Igambang’ombe","Tharaka","Maara"],
+  "Embu": ["Manyatta","Runyenjes","Mbeere North","Mbeere South","Embu East","Embu West"],
+  "Kitui": ["Kitui East","Kitui West","Kitui South","Kitui Rural","Mwingi North","Mwingi West","Mwingi Central"],
+  "Machakos": ["Machakos Town","Masinga","Yatta","Mwala","Kangundo","Kathiani","Matungulu","Kaiti"],
+  "Makueni": ["Makueni","Kibwezi West","Kibwezi East","Kathonzweni","Makindu","Mbooni"],
+  "Nyandarua": ["North Kinangop","South Kinangop","Ol Kalou","Ol Jorok","Kinangop"],
+  "Nyeri": ["Nyeri Town","Tetu","Mathira East","Mathira West","Mukurweini","Othaya"],
+  "Kirinyaga": ["Kirinyaga Central","Kirinyaga East","Kirinyaga West","Mwea","Mwea East","Mwea West"],
+  "Murang’a": ["Kandara","Mathioya","Kiharu","Kigumo","Maragwa"],
+  "Kiambu": ["Kiambaa","Kabete","Lari","Githunguri","Kikuyu","Limuru","Thika Town","Gatundu North","Gatundu South","Ruiru","Juja"],
+  "Turkana": ["Turkana North","Turkana Central","Turkana South","Turkana East","Turkana West","Loima"],
+  "West Pokot": ["Kapenguria","Pokot South","Pokot Central","Pokot North","Sigor"],
+  "Samburu": ["Samburu North","Samburu East","Samburu West"],
+  "Trans Nzoia": ["Kitale East","Kitale West","Kiminini","Saboti","Cherangany"],
+  "Uasin Gishu": ["Soy","Turbo","Kesses","Moiben","Ainabkoi"],
+  "Elgeyo-Marakwet": ["Keiyo North","Keiyo South","Marakwet East","Marakwet West"],
+  "Nandi": ["Nandi North","Nandi South","Nandi Central","Nandi East","Mosop"],
+  "Baringo": ["Baringo North","Baringo Central","Baringo South","Eldama Ravine","Tiaty"],
+  "Laikipia": ["Laikipia West","Laikipia East","Laikipia North"],
+  "Nakuru": ["Nakuru Town East","Nakuru Town West","Gilgil","Molo","Subukia","Kuresoi South","Kuresoi North"],
+  "Narok": ["Narok North","Narok South","Narok East","Kilgoris","Emurua Dikirr"],
+  "Kajiado": ["Kajiado North","Kajiado West","Kajiado Central","Kajiado South","Kajiado East"],
+  "Kericho": ["Ainamoi","Bureti","Belgut","Soin/Sigowet"],
+  "Bomet": ["Bomet Central","Bomet East","Bomet West"],
+  "Kakamega": ["Lugari","Likuyani","Lurambi","Malava","Mumias East","Mumias West","Navakholo","Shinyalu","Ikolomani","Matungu"],
+  "Vihiga": ["Sabatia","Hamisi","Emuhaya","Luanda","Vihiga"],
+  "Busia": ["Busia","Bunyala","Samia","Butula","Teso North","Teso South"],
+  "Siaya": ["Siaya","Ugenya","Ugunja","Alego Usonga","Bondo","Rarieda"],
+  "Kisumu": ["Kisumu East","Kisumu West","Kisumu Central","Nyando","Seme","Muhoroni","Nyakach"],
+  "Homa Bay": ["Ndhiwa","Homa Bay Town","Rangwe","Suba North","Suba South"],
+  "Migori": ["Migori","Rongo","Oyugis","Uriri","Kurial","Suna East","Suna West"],
+  "Kisii": ["Kisii","Bonchari","Bobasi","Nyaribari Masaba","Nyaribari Chache","Kisii Central","Kitutu Chache North","Kitutu Chache South"],
+  "Nyamira": ["North Mugirango","West Mugirango","Kitutu Masaba"]
+};
+      const cSel = document.getElementById('county');
+      Object.keys(counties).forEach(ct=>{
+        let o=new Option(ct,ct); cSel.add(o);
+      });
+      window.counties = counties;
+
+      // load stored user
+      const key = localStorage.getItem('loggedInUser');
+      if(!key) return location.replace('login.html');
+      const user = JSON.parse(localStorage.getItem(key)||'{}');
+      // fill all fields:
+      document.getElementById('username').value = user.username||'';
+      document.getElementById('avatarPreview').src = user.photo||'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+      ['name','email','contact','dob','description','allergies','medications','disabilities','mental_health','medical_notes']
+        .forEach(id=> document.getElementById(id).value = user[id]||'' );
+      document.getElementById('gender').value = user.gender||'';
+      document.getElementById('height_ft').value = user.height_ft||'';
+      document.getElementById('height_in').value = user.height_in||'';
+      document.getElementById('weight_kg').value = user.weight_kg||'';
+      // location
+      document.getElementById('county').value = user.county||'';
+      loadConstituencies();
+      document.getElementById('constituency').value = user.constituency||'';
+
+      // emergency contacts
+      const contactsDiv = document.getElementById('contactsList');
+      (user.emergencyContacts||[]).forEach(c=>{
+        let d=document.createElement('div');
+        d.className='emg-contact';
+        d.innerHTML = `<div><strong>${c.name}</strong><br>${c.phone||c.contact}</div>`;
+        contactsDiv.appendChild(d);
+      });
+
+      // use cases
+      (user.use_case||[]).forEach(val=>{
+        let chk = document.querySelector(`input[name=use_case][value=${val}]`);
+        if(chk) chk.checked = true;
+      });
+
+      // photo input hookup
+      const photoInput = document.getElementById('photoInput');
+      photoInput.addEventListener('change', e=>{
+        const reader=new FileReader();
+        reader.onload = evt=> document.getElementById('avatarPreview').src = evt.target.result;
+        reader.readAsDataURL(photoInput.files[0]);
+      });
+    });
+
+    // during save
+    document.getElementById('profileForm').addEventListener('submit', e=>{
+      e.preventDefault();
+      const key = localStorage.getItem('loggedInUser');
+      const u = JSON.parse(localStorage.getItem(key));
+      ['name','email','contact','dob','description','allergies','medications','disabilities','mental_health','medical_notes']
+        .forEach(id=> u[id] = document.getElementById(id).value );
+      u.gender = document.getElementById('gender').value;
+      u.photo = document.getElementById('avatarPreview').src;
+      u.height_ft = document.getElementById('height_ft').value;
+      u.height_in = document.getElementById('height_in').value;
+      u.weight_kg = document.getElementById('weight_kg').value;
+      u.county = document.getElementById('county').value;
+      u.constituency = document.getElementById('constituency').value;
+      // use cases
+      u.use_case = Array.from(document.querySelectorAll('input[name=use_case]:checked'))
+                      .map(cb=>cb.value);
+      // persist
+      localStorage.setItem(key, JSON.stringify(u));
+      localStorage.setItem('userData', JSON.stringify(u));
+      alert('Profile updated!');
+    });
+
+    // dynamic constituency loader
+    function loadConstituencies(){
+      const ct = document.getElementById('county').value;
+      const sel = document.getElementById('constituency');
+      sel.innerHTML = '<option value="">Select Constituency</option>';
+      (window.counties[ct]||[]).forEach(c=>{
+        sel.add(new Option(c,c));
+      });
+    }
+  </script>
+  <script src="symphbot.js"></script>
+</body>
+</html>

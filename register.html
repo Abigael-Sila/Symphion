@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Register</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body { background-color: #f8f9fa; font-family: 'Poppins', sans-serif; }
+    .register-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding:1rem; }
+    .register-card { width:100%; max-width:500px; padding:2rem; border-radius:15px; box-shadow:0 4px 20px rgba(0,0,0,0.1); background:#fff; }
+    .form-step { display:none; opacity:0; transition:opacity 0.5s; }
+    .form-step.active { display:block; opacity:1; }
+
+    /* enhanced progress indicator */
+    .progress-indicator {
+      display:flex; justify-content:space-between; position:relative;
+      width:100%; margin-bottom:1.5rem; padding:1rem 0;
+    }
+    /* background track */
+    .progress-indicator::before {
+      content:''; position:absolute; top:50%; left:15px; right:15px;
+      height:4px; background:#e0e0e0; transform:translateY(-50%); border-radius:2px;
+      z-index:0;
+    }
+    /* step bubble */
+    .step {
+      position:relative; z-index:1; width:30px; height:30px;
+      background:#e0e0e0; border-radius:50%; display:flex;
+      align-items:center; justify-content:center; font-weight:600;
+      color:#777; transition:background 0.3s, color 0.3s;
+      cursor:pointer;
+    }
+    /* active step bubble */
+    .step.active {
+      background:#007bff; color:#fff;
+    }
+    /* animated fill line */
+    .progress-line {
+      position:absolute; top:50%; left:15px;
+      height:4px; background:#007bff;
+      transform:translateY(-50%); width:0;
+      border-radius:2px; transition:width 0.5s ease;
+      z-index:0;
+    }
+
+    .photo-upload { position:relative; width:120px; height:120px; margin:0 auto 1rem; }
+    .avatar-wrapper { width:100%; height:100%; border:2px dashed #ccc; border-radius:50%; overflow:hidden; cursor:pointer; }
+    .avatar-img { width:100%; height:100%; object-fit:cover; }
+    .avatar-plus { position:absolute; bottom:0; right:0; background:#007bff; color:#fff; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; border:2px solid #fff; }
+    .d-flex.gap-2 > * { flex:1; }
+    @media(max-width:576px) {
+      .register-card { padding:1rem; }
+      .photo-upload { width:100px; height:100px; }
+      .avatar-plus { width:28px; height:28px; font-size:20px; }
+      .d-flex.gap-2 { flex-wrap:wrap; gap:0.5rem; }
+      .d-flex.gap-2 > * { flex:1 1 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="register-container">
+    <div class="register-card">
+      <h4 class="text-center mb-4">Create an Account</h4>
+      <div class="progress-indicator">
+        <div class="progress-line"></div>
+        <div class="step active" data-step="1" id="progress-step-1">1</div>
+        <div class="step" data-step="2" id="progress-step-2">2</div>
+        <div class="step" data-step="3" id="progress-step-3">3</div>
+        <div class="step" data-step="4" id="progress-step-4">4</div>
+      </div>
+      <form id="registrationForm">
+
+        <!-- STEP 1 -->
+        <div id="step1" class="form-step active">
+          <h5 class="mb-3">Personal Information</h5>
+          <div class="photo-upload">
+            <input type="file" id="photo" hidden onchange="previewPhoto(this)">
+            <div class="avatar-wrapper" onclick="document.getElementById('photo').click();">
+              <img id="avatarPreview" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Avatar" class="avatar-img">
+              <div class="avatar-plus">+</div>
+            </div>
+          </div>
+          <div class="mb-3"><input type="text" id="username" name="username" class="form-control" placeholder="Username" required></div>
+          <div class="mb-3"><input type="text" id="name" name="name" class="form-control" placeholder="Full Name" required></div>
+          <div class="mb-3"><input type="email" id="email" name="email" class="form-control" placeholder="Email" required></div>
+          <div class="mb-3"><input type="tel" id="contact" name="contact" class="form-control" placeholder="Contact" required></div>
+          <div class="d-grid"><button type="button" class="btn btn-primary" onclick="nextStep(2)">Next</button></div>
+        </div>
+
+        <!-- STEP 2 -->
+        <div id="step2" class="form-step">
+          <h5 class="mb-3">Account Details</h5>
+          <div class="mb-3"><input type="password" id="password" name="password" class="form-control" placeholder="Password" required></div>
+          <div class="mb-3"><input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="Confirm Password" required></div>
+          <div class="mb-3">Date of Birth:<br><input type="date" id="dob" name="dob" class="form-control"></div>
+          <div class="mb-3">
+            Gender:
+            <br>
+            <label><input type="radio" name="gender" value="male"> Male</label>
+            <label><input type="radio" name="gender" value="female"> Female</label>
+            <label><input type="radio" name="gender" value="other"> Other</label>
+          </div>
+          <div class="mb-3 d-flex gap-2">
+            <input type="number" name="height_ft" class="form-control" placeholder="Height (ft)">
+            <input type="number" name="height_in" class="form-control" placeholder="Height (in)">
+            <input type="number" name="weight_kg" class="form-control" placeholder="Weight (kg)">
+          </div>
+          <div class="mb-3">
+            <select id="county" name="county" class="form-select" onchange="loadConstituencies()">
+              <option value="">Select County</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <select id="constituency" name="constituency" class="form-select">
+              <option value="">Select Constituency</option>
+            </select>
+          </div>
+          <div class="d-flex justify-content-between">
+            <button type="button" class="btn btn-secondary" onclick="nextStep(1)">Back</button>
+            <button type="button" class="btn btn-primary" onclick="nextStep(3)">Next</button>
+          </div>
+        </div>
+
+        <!-- STEP 3 -->
+        <div id="step3" class="form-step">
+          <h5 class="mb-3">Additional Info</h5>
+          <div class="mb-3">
+            <label>Add Emergency Contact</label>
+            <div class="input-group mb-2">
+              <input type="text" id="emg_name" class="form-control" placeholder="Name">
+              <input type="tel" id="emg_phone" class="form-control" placeholder="Phone">
+              <input type="email" id="emg_email" class="form-control" placeholder="Email">
+              <button type="button" class="btn btn-outline-primary" onclick="addEmergencyContact()">+ Add</button>
+            </div>
+            <div id="contacts-list" class="mb-2"></div>
+          </div>
+          <div class="mb-3"><label for="description">Describe Yourself</label><textarea name="description" class="form-control" placeholder="Describe yourself..."></textarea></div>
+          <div class="mb-3">
+            <label>Primary Use Case</label>
+            <div class="dropdown">
+              <button class="btn btn-secondary dropdown-toggle" type="button" id="useCaseDropdown" data-bs-toggle="dropdown">Select Use Cases</button>
+              <ul class="dropdown-menu" aria-labelledby="useCaseDropdown">
+                <li><label class="dropdown-item"><input type="checkbox" name="use_case" value="medical"> Medical Emergency</label></li>
+                <li><label class="dropdown-item"><input type="checkbox" name="use_case" value="safety"> Personal Safety</label></li>
+                <li><label class="dropdown-item"><input type="checkbox" name="use_case" value="security"> Security</label></li>
+                <li><label class="dropdown-item"><input type="checkbox" name="use_case" value="other"> Other</label></li>
+                <li><label class="dropdown-item"><input type="checkbox" name="use_case" value="prefer_not"> Prefer Not to Say</label></li>
+              </ul>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label>Medical Info</label>
+            <div class="dropdown mb-2">
+              <button class="btn btn-secondary dropdown-toggle" type="button" id="medicalDropdown" data-bs-toggle="dropdown">Select Medical Details</button>
+              <ul class="dropdown-menu p-3" aria-labelledby="medicalDropdown">
+                <li class="dropdown-item"><label>Allergies: <input type="text" name="allergies"></label></li>
+                <li class="dropdown-item"><label>Medications: <input type="text" name="medications"></label></li>
+                <li class="dropdown-item"><label>Disabilities: <input type="text" name="disabilities"></label></li>
+                <li class="dropdown-item"><label>Mental Health: <input type="text" name="mental_health"></label></li>
+                <li class="dropdown-item"><label>Additional Notes:<br><textarea name="medical_notes"></textarea></label></li>
+              </ul>
+            </div>
+          </div>
+          <div class="d-flex justify-content-between">
+            <button type="button" class="btn btn-secondary" onclick="nextStep(2)">Back</button>
+            <button type="button" class="btn btn-primary" onclick="nextStep(4)">Preview</button>
+          </div>
+        </div>
+
+        <!-- STEP 4: PREVIEW -->
+        <div id="step4" class="form-step">
+          <h5 class="mb-3">Review & Submit</h5>
+          <div class="summary mb-3">
+            <p><strong>Username:</strong> <span id="summary-username"></span></p>
+            <p><strong>Name:</strong> <span id="summary-name"></span></p>
+            <p><strong>Email:</strong> <span id="summary-email"></span></p>
+            <p><strong>Contact:</strong> <span id="summary-contact"></span></p>
+            <p><strong>Emergency Contact(s):</strong> <span id="summary-emergency"></span></p>
+            <p><strong>Gender:</strong> <span id="summary-gender"></span></p>
+            <p><strong>DOB:</strong> <span id="summary-dob"></span></p>
+            <p><strong>County:</strong> <span id="summary-county"></span></p>
+            <p><strong>Constituency:</strong> <span id="summary-constituency"></span></p>
+          </div>
+          <div class="d-flex justify-content-between">
+            <button type="button" class="btn btn-secondary" onclick="nextStep(3)">Back</button>
+            <button type="submit" class="btn btn-success">Register</button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+<script>
+    // IMAGE PREVIEW
+function previewPhoto(input) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('avatarPreview').src = e.target.result;
+  };
+  if (input.files && input.files[0]) reader.readAsDataURL(input.files[0]);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Photo input
+  document.getElementById('photo').addEventListener('change', () => previewPhoto(document.getElementById('photo')));
+
+  // Progress bar setup
+  let currentStep = 1;
+  const totalSteps = 4;
+  const line = document.querySelector('.progress-line');
+  function updateProgress(step) {
+    const pct = ((step - 1) / (totalSteps - 1)) * 100;
+    line.style.width = `calc(${pct}% - 15px)`;
+  }
+  function nextStep(step) {
+    if (step < 1 || step > totalSteps) return;
+    document.getElementById(`step${currentStep}`).classList.remove('active');
+    document.getElementById(`progress-step-${currentStep}`).classList.remove('active');
+    currentStep = step;
+    document.getElementById(`step${step}`).classList.add('active');
+    document.getElementById(`progress-step-${step}`).classList.add('active');
+    updateProgress(step);
+    if (step === totalSteps) populatePreview();
+  }
+  window.nextStep = nextStep;
+  updateProgress(1);
+  document.querySelectorAll('.step').forEach(el => el.addEventListener('click', () => nextStep(+el.dataset.step)));
+
+  // Emergency contacts
+  let contacts = [];
+  function renderContacts() {
+    document.getElementById('contacts-list').innerHTML =
+      contacts.map(c => `<div>${c.name} (${c.phone})</div>`).join('');
+  }
+  window.addEmergencyContact = () => {
+    const name = document.getElementById('emg_name').value.trim();
+    const phone = document.getElementById('emg_phone').value.trim();
+    if (!name || !phone) return;
+    contacts.push({ name, phone });
+    renderContacts();
+    document.getElementById('emg_name').value = '';
+    document.getElementById('emg_phone').value = '';
+    // save to guardians
+    const store = JSON.parse(localStorage.getItem('guardians') || '[]');
+    store.push({ name, contact: phone, alertStatus: 'Enabled' });
+    localStorage.setItem('guardians', JSON.stringify(store));
+  };
+
+  // Counties & constituencies
+const counties = {
+  "Mombasa": ["Mvita","Jomvu","Changamwe","Nyali","Kisauni","Likoni"],
+  "Kwale": ["Msambweni","Matuga","Lunga Lunga","Kinango"],
+  "Kilifi": ["Kilifi North","Kilifi South","Rabai","Malindi","Mariakani","Ganze","Kaloleni","Magarini"],
+  "Tana River": ["Galole","Garsen","Bura"],
+  "Lamu": ["Lamu East","Lamu West"],
+  "Taita-Taveta": ["Taveta","Voi","Wundanyi","Mwatate"],
+  "Garissa": ["Garissa Township","Lagdera","Fafi","Ijara","Dadaab","Balambala"],
+  "Wajir": ["Wajir East","Wajir North","Wajir West","Wajir South","Eldas","Tarbaj","Lagdera"],
+  "Mandera": ["Mandera East","Mandera North","Mandera South","Mandera West","Lafey","Banissa","Takaba"],
+  "Marsabit": ["North Horr","Laisamis","Saku","Turkana North"],
+  "Isiolo": ["Isiolo North","Isiolo South","Merti"],
+  "Meru": ["Imenti North","Imenti South","Buuri","Tigania West","Tigania East","North Imenti","South Imenti","Igembe North","Igembe Central","Igembe South"],
+  "Tharaka-Nithi": ["Chuka/Igambang’ombe","Tharaka","Maara"],
+  "Embu": ["Manyatta","Runyenjes","Mbeere North","Mbeere South","Embu East","Embu West"],
+  "Kitui": ["Kitui East","Kitui West","Kitui South","Kitui Rural","Mwingi North","Mwingi West","Mwingi Central"],
+  "Machakos": ["Machakos Town","Masinga","Yatta","Mwala","Kangundo","Kathiani","Matungulu","Kaiti"],
+  "Makueni": ["Makueni","Kibwezi West","Kibwezi East","Kathonzweni","Makindu","Mbooni"],
+  "Nyandarua": ["North Kinangop","South Kinangop","Ol Kalou","Ol Jorok","Kinangop"],
+  "Nyeri": ["Nyeri Town","Tetu","Mathira East","Mathira West","Mukurweini","Othaya"],
+  "Kirinyaga": ["Kirinyaga Central","Kirinyaga East","Kirinyaga West","Mwea","Mwea East","Mwea West"],
+  "Murang’a": ["Kandara","Mathioya","Kiharu","Kigumo","Maragwa"],
+  "Kiambu": ["Kiambaa","Kabete","Lari","Githunguri","Kikuyu","Limuru","Thika Town","Gatundu North","Gatundu South","Ruiru","Juja"],
+  "Turkana": ["Turkana North","Turkana Central","Turkana South","Turkana East","Turkana West","Loima"],
+  "West Pokot": ["Kapenguria","Pokot South","Pokot Central","Pokot North","Sigor"],
+  "Samburu": ["Samburu North","Samburu East","Samburu West"],
+  "Trans Nzoia": ["Kitale East","Kitale West","Kiminini","Saboti","Cherangany"],
+  "Uasin Gishu": ["Soy","Turbo","Kesses","Moiben","Ainabkoi"],
+  "Elgeyo-Marakwet": ["Keiyo North","Keiyo South","Marakwet East","Marakwet West"],
+  "Nandi": ["Nandi North","Nandi South","Nandi Central","Nandi East","Mosop"],
+  "Baringo": ["Baringo North","Baringo Central","Baringo South","Eldama Ravine","Tiaty"],
+  "Laikipia": ["Laikipia West","Laikipia East","Laikipia North"],
+  "Nakuru": ["Nakuru Town East","Nakuru Town West","Gilgil","Molo","Subukia","Kuresoi South","Kuresoi North"],
+  "Narok": ["Narok North","Narok South","Narok East","Kilgoris","Emurua Dikirr"],
+  "Kajiado": ["Kajiado North","Kajiado West","Kajiado Central","Kajiado South","Kajiado East"],
+  "Kericho": ["Ainamoi","Bureti","Belgut","Soin/Sigowet"],
+  "Bomet": ["Bomet Central","Bomet East","Bomet West"],
+  "Kakamega": ["Lugari","Likuyani","Lurambi","Malava","Mumias East","Mumias West","Navakholo","Shinyalu","Ikolomani","Matungu"],
+  "Vihiga": ["Sabatia","Hamisi","Emuhaya","Luanda","Vihiga"],
+  "Busia": ["Busia","Bunyala","Samia","Butula","Teso North","Teso South"],
+  "Siaya": ["Siaya","Ugenya","Ugunja","Alego Usonga","Bondo","Rarieda"],
+  "Kisumu": ["Kisumu East","Kisumu West","Kisumu Central","Nyando","Seme","Muhoroni","Nyakach"],
+  "Homa Bay": ["Ndhiwa","Homa Bay Town","Rangwe","Suba North","Suba South"],
+  "Migori": ["Migori","Rongo","Oyugis","Uriri","Kurial","Suna East","Suna West"],
+  "Kisii": ["Kisii","Bonchari","Bobasi","Nyaribari Masaba","Nyaribari Chache","Kisii Central","Kitutu Chache North","Kitutu Chache South"],
+  "Nyamira": ["North Mugirango","West Mugirango","Kitutu Masaba"]
+};
+  const countySel = document.getElementById('county');
+  Object.keys(counties).forEach(cnt => countySel.add(new Option(cnt, cnt)));
+  window.loadConstituencies = () => {
+    const sel = document.getElementById('constituency');
+    sel.innerHTML = '<option value="">Select Constituency</option>';
+    (counties[countySel.value] || []).forEach(c => sel.add(new Option(c, c)));
+  };
+
+  // Preview function
+  function populatePreview() {
+    const fm = document.getElementById('registrationForm');
+    document.getElementById('summary-username').textContent = fm.username.value;
+    document.getElementById('summary-name').textContent = fm.name.value;
+    document.getElementById('summary-email').textContent = fm.email.value;
+    document.getElementById('summary-contact').textContent = fm.contact.value;
+    document.getElementById('summary-emergency').textContent = contacts.map(c => `${c.name} (${c.phone})`).join(', ');
+    const gd = fm.querySelector("input[name='gender']:checked");
+    document.getElementById('summary-gender').textContent = gd ? gd.value : '';
+    document.getElementById('summary-dob').textContent = fm.dob.value;
+    document.getElementById('summary-county').textContent = fm.county.value;
+    document.getElementById('summary-constituency').textContent = fm.constituency.value;
+  }
+  window.populatePreview = populatePreview;
+
+  // Final form submit
+  document.getElementById('registrationForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const fm = e.target;
+    const user = {
+      username: fm.username.value,
+      name: fm.name.value,
+      email: fm.email.value,
+      contact: fm.contact.value,
+      password: fm.password.value,
+      dob: fm.dob.value,
+      gender: (fm.querySelector("input[name='gender']:checked")||{}).value || '',
+      height_ft: fm.height_ft.value,
+      height_in: fm.height_in.value,
+      weight_kg: fm.weight_kg.value,
+      county: fm.county.value,
+      constituency: fm.constituency.value,
+      description: fm.description.value,
+      use_case: Array.from(fm.querySelectorAll("input[name='use_case']:checked")).map(cb => cb.value),
+      allergies: fm.allergies.value || '',
+      medications: fm.medications.value || '',
+      disabilities: fm.disabilities.value || '',
+      mental_health: fm.mental_health.value || '',
+      medical_notes: fm.medical_notes.value || '',
+      emergencyContacts: contacts,
+      photo: document.getElementById('avatarPreview').src
+    };
+    localStorage.setItem(user.username, JSON.stringify(user));
+    localStorage.setItem('loggedInUser', user.username);
+    window.location.href = 'login.html';
+  });
+});
+
+  </script>
+</body>
+</html>
